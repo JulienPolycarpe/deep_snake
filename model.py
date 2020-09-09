@@ -27,14 +27,14 @@ def train():
 
 	model = initModel(x.shape[1])
 	model.compile(optimizer = "adam", loss	= "categorical_crossentropy", metrics = ['accuracy'])
-	model.fit(x, y_one_hot, batch_size = 32, epochs = 1000)
+	model.fit(x, y_one_hot, batch_size = 32, epochs = 100)
 	return model
 
 
 
 def predict(model, x):
 	directions = ["left", "right", "up", "down"]
-	df = pd.DataFrame(data = np.reshape(x, (1, 81)), index = [0], columns=[i for i in range(81)])
+	df = pd.DataFrame(data = np.reshape(x, (1, 83)), index = [0], columns=[i for i in range(83)])
 	predicts = model.predict(df).flatten()
 	max_ind = np.argmax(predicts)
 	return max_ind, directions[max_ind]

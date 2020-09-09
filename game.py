@@ -150,8 +150,12 @@ class Game():
 	def updateSnakeBody(self):
 		dx = 0
 		dy = 0
+		distance_to_apple = abs(self.apple_x - self.snake_x[0]) + abs(self.apple_y - self.snake_y[0])
+		#self.direction_int = np.random.randint(4)
+		x = np.reshape(self.grid, (1, len(self.grid) ** 2)).flatten()
+		y = np.concatenate((x, [self.score, distance_to_apple]))
+		self.direction_int, direction = predict(model, y)
 
-		self.direction_int, _ = predict(model, self.grid)
 		if self.direction_int == 0:
 			self.moveLeft(None)
 		elif self.direction_int == 1:
@@ -202,9 +206,14 @@ class Game():
 			if tmp == -1:
 				self.apple_x, self.apple_y = self.initApple()
 				self.upgradeSnake()
-
-			print(self.grid, self.snake_x, self.snake_y, predict(model, self.grid))
-			#self.saveMove()
+			#new_distance_to_apple = abs(self.apple_x - self.snake_x[0]) + abs(self.apple_y - self.snake_y[0])
+			print(self.grid, self.snake_x, self.snake_y, direction)#, distance_to_apple, new_distance_to_apple)#, predict(model, self.grid))
+			"""
+			if new_distance_to_apple < distance_to_apple:
+				x = np.reshape(self.grid, (1, len(self.grid) ** 2)).flatten()
+				y = np.concatenate((x, [self.score, new_distance_to_apple]))
+				#self.saveMove([y])
+			"""
 		else:
 			self.game_lost = True
 
@@ -223,7 +232,7 @@ class Game():
 			self.apple_x, self.apple_y = self.initApple()
 			print(self.grid, self.snake_x, self.snake_y)
 
-		self.canvas.after(500, self.updateSnakeBody)
+		self.canvas.after(250, self.updateSnakeBody)
 
 
 
@@ -247,8 +256,8 @@ class Game():
 			2 up
 			3 down
 	"""
-	def saveMove(self):
-		np.savetxt(self.grid_file, [np.reshape(self.grid, (1, len(self.grid) ** 2)).flatten()], delimiter=';', fmt='%d')
+	def saveMove(self, to_save):
+		np.savetxt(self.grid_file, to_save, delimiter=';', fmt='%d')
 		np.savetxt(self.move_file, [self.direction_int], delimiter=';', fmt='%d')
 
 model = train()
